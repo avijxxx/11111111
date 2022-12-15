@@ -120,7 +120,7 @@ jobs:
         chmod +x $DIY_P2_SH
         cp -Rf diy/* openwrt/
         cd openwrt
-        $GITHUB_WORKSPACE/$DIY_P2_SH
+        #$GITHUB_WORKSPACE/$DIY_P2_SH
         
         
     - name: SSH connection to Actions
