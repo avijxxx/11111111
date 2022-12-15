@@ -145,6 +145,9 @@ jobs:
     - name: Download package
       id: package
       run: |
+        [ ! -e openwrt/dl/ ] && mkdir openwrt/dl
+        [ -e dl ] && cp dl/* openwrt/dl/
+        [ -e /workdir/dl ] && cp /workdir/dl/* openwrt/dl/
         cd openwrt
         make defconfig
         make download -j8
