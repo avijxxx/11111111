@@ -60,9 +60,9 @@ EOF
 
 
 #增加alist
-#git clone https://github.com/sbwml/luci-app-alist package/alist
-#rm -rf feeds/packages/lang/golang
-#svn export https://github.com/sbwml/packages_lang_golang/branches/19.x feeds/packages/lang/golang
+git clone https://github.com/sbwml/luci-app-alist package/alist
+rm -rf feeds/packages/lang/golang
+svn export https://github.com/sbwml/packages_lang_golang/branches/19.x feeds/packages/lang/golang
 
 #增加mosdns
 find ./ | grep Makefile | grep v2ray-geodata | xargs rm -f
@@ -70,7 +70,7 @@ find ./ | grep Makefile | grep mosdns | xargs rm -f
 git clone https://github.com/sbwml/luci-app-mosdns.git package/luci-app-mosdns
 git clone https://github.com/sbwml/v2ray-geodata.git package/v2ray-geodata
 
-#git clone https://github.com/sirpdboy/luci-app-ddns-go.git package/ddns-go
+git clone https://github.com/sirpdboy/luci-app-ddns-go.git package/ddns-go
 #git clone https://github.com/sirpdboy/netspeedtest package/netspeedtest
 
 find ./ | grep Makefile | grep argon | xargs rm -f
