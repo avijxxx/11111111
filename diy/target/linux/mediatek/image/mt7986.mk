@@ -382,7 +382,7 @@ define Device/xiaomi_redmi-router-ax6000
  endef
  TARGET_DEVICES += xiaomi_redmi-router-ax6000
  
- define Device/xiaomi_redmi-router-ax6000-h
+define Device/xiaomi_redmi-router-ax6000-h
   DEVICE_VENDOR := Xiaomi
   DEVICE_MODEL := Redmi Router AX6000 H
   DEVICE_DTS := mt7986a-xiaomi-redmi-router-ax6000-h
