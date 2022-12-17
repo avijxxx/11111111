@@ -90,6 +90,12 @@ jobs:
         df -hT $PWD
         git clone $REPO_URL -b $REPO_BRANCH openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
+
+    - name: patch
+      run: |
+        cp patch.diff openwrt/patch.diff
+        cd openwrt
+        git apply patch.diff
         
    
     - name: Cache
@@ -115,11 +121,7 @@ jobs:
     - name: Install feeds
       run: cd openwrt && ./scripts/feeds install -a
       
-    - name: patch
-      run: |
-        cp diffpatch openwrt/diffpatch
-        cd openwrt
-        git apply diffpatch
+
       
 
     - name: Load custom configuration
