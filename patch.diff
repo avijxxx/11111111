@@ -65,16 +65,7 @@ index 5311bf8..cdeefd7 100644
  TxCmdMode=1
  MuOfdmaDlEnable=1
  MuOfdmaUlEnable=1
-@@ -434,3 +434,9 @@ ScsEnable=0
- QoSMgmtCapa=0
- BcnProt=0
- ApCliBcnProt=0
-+
-+WpaMixPairCipher=
-+WEP1Type1=0
-+WEP4Type1=0
-+WEP3Type1=0
-+WEP2Type1=0
+
 diff --git a/package/mtk/drivers/wifi-profile/files/mt7986/mt7986-ax6000.dbdc.b1.dat b/package/mtk/drivers/wifi-profile/files/mt7986/mt7986-ax6000.dbdc.b1.dat
 index ba1cff3..644218e 100644
 --- a/package/mtk/drivers/wifi-profile/files/mt7986/mt7986-ax6000.dbdc.b1.dat
@@ -142,13 +133,4 @@ index ba1cff3..644218e 100644
  TxCmdMode=1
  MuOfdmaDlEnable=1
  MuOfdmaUlEnable=1
-@@ -435,3 +435,9 @@ ScsEnable=0
- QoSMgmtCapa=0
- BcnProt=0
- ApCliBcnProt=0
-+
-+WpaMixPairCipher=
-+WEP1Type1=0
-+WEP4Type1=0
-+WEP3Type1=0
-+WEP2Type1=0
+
