@@ -1,37 +1,4 @@
-sed -i '/DTS_DIR:=$(LINUX_DIR)/a\BUILD_DATE_PREFIX := $(shell TZ=Asia/Shanghai date +'%Y%m%d-%H%M')' ./include/image.mk
-sed -i 's/IMG_PREFIX:=/IMG_PREFIX:=$(BUILD_DATE_PREFIX)-/g' ./include/image.mk
 sed -i 's/192.168.6.1/192.168.10.12/g' package/base-files/files/bin/config_generate
-
-sed -i 's/SSID1=Redmi_AX6000_2.4G/SSID1=123123_2.4/g' package/mtk/drivers/wifi-profile/files/mt7986/mt7986-ax6000.dbdc.b0.dat
-sed -i 's/SSID1=Redmi_AX6000_5G/SSID1=123123/g' package/mtk/drivers/wifi-profile/files/mt7986/mt7986-ax6000.dbdc.b1.dat
-sed -i 's/WPAPSK1=12345678/WPAPSK1=88896825/g' package/mtk/drivers/wifi-profile/files/mt7986/mt7986-ax6000.dbdc.b0.dat
-sed -i 's/WPAPSK1=12345678/WPAPSK1=88896825/g' package/mtk/drivers/wifi-profile/files/mt7986/mt7986-ax6000.dbdc.b1.dat
-sed -i 's/AuthMode=OPEN/AuthMode=WPA2PSKWPA3PSK/g' package/mtk/drivers/wifi-profile/files/mt7986/mt7986-ax6000.dbdc.b1.dat
-sed -i 's/AuthMode=OPEN/AuthMode=WPA2PSKWPA3PSK/g' package/mtk/drivers/wifi-profile/files/mt7986/mt7986-ax6000.dbdc.b0.dat
-sed -i 's/EncrypType=NONE/EncrypType=AES/g' package/mtk/drivers/wifi-profile/files/mt7986/mt7986-ax6000.dbdc.b1.dat
-sed -i 's/EncrypType=NONE/EncrypType=AES/g' package/mtk/drivers/wifi-profile/files/mt7986/mt7986-ax6000.dbdc.b0.dat
-sed -i 's/PMFMFPC=0/PMFMFPC=1/g'  package/mtk/drivers/wifi-profile/files/mt7986/mt7986-ax6000.dbdc.b1.dat
-sed -i 's/PMFMFPC=0/PMFMFPC=1/g'  package/mtk/drivers/wifi-profile/files/mt7986/mt7986-ax6000.dbdc.b0.dat
-sed -i 's/RekeyMethod=DISABLE/RekeyMethod=TIME/g'  package/mtk/drivers/wifi-profile/files/mt7986/mt7986-ax6000.dbdc.b1.dat
-sed -i 's/RekeyMethod=DISABLE/RekeyMethod=TIME/g'  package/mtk/drivers/wifi-profile/files/mt7986/mt7986-ax6000.dbdc.b0.dat
-
-cat >> package/mtk/drivers/wifi-profile/files/mt7986/mt7986-ax6000.dbdc.b1.dat <<EOF
-WpaMixPairCipher=
-WEP1Type1=0
-WEP4Type1=0
-WEP3Type1=0
-WEP2Type1=0
-EOF
-
-#cat >> package/mtk/drivers/wifi-profile/files/mt7986/mt7986-ax6000.dbdc.b0.dat <<EOF
-WpaMixPairCipher=
-WEP1Type1=0
-WEP4Type1=0
-WEP3Type1=0
-WEP2Type1=0
-EOF
-
-
 
 
 #增加alist
