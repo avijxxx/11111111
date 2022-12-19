@@ -1,5 +1,21 @@
 sed -i 's/192.168.6.1/192.168.10.12/g' package/base-files/files/bin/config_generate
 
+cat >> package/mtk/drivers/wifi-profile/files/mt7986/mt7986-ax6000.dbdc.b1.dat <<EOF
+WpaMixPairCipher=
+WEP1Type1=0
+WEP4Type1=0
+WEP3Type1=0
+WEP2Type1=0
+EOF
+
+#cat >> package/mtk/drivers/wifi-profile/files/mt7986/mt7986-ax6000.dbdc.b0.dat <<EOF
+WpaMixPairCipher=
+WEP1Type1=0
+WEP4Type1=0
+WEP3Type1=0
+WEP2Type1=0
+EOF
+
 cat >> .config <<EOF
 CONFIG_PACKAGE_openssh-sftp-server=y
 CONFIG_PACKAGE_luci-app-alist=y
