@@ -26,6 +26,9 @@ CONFIG_PACKAGE_luci-app-vlmcsd=y
 CONFIG_PACKAGE_luci-app-watchcat=y
 CONFIG_PACKAGE_luci-app-zerotier=y
 CONFIG_PACKAGE_luci-app-lucky=y
+#测试的两个
+CONFIG_PACKAGE_sing-box=y
+CONFIG_PACKAGE_luci-app-myproxy=y
 EOF
 
 
