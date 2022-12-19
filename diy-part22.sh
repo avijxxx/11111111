@@ -1,11 +1,6 @@
 sed -i 's/192.168.6.1/192.168.10.12/g' package/base-files/files/bin/config_generate
 
 cat >> .config <<EOF
-# CONFIG_PACKAGE_luci-app-adbyby-fix is not set
-# CONFIG_PACKAGE_luci-app-vssr_INCLUDE_ShadowsocksR_Libev_Server is not set
-# CONFIG_PACKAGE_luci-app-vssr_INCLUDE_Trojan is not set
-# CONFIG_PACKAGE_luci-app-vssr_INCLUDE_Xray is not set
-# CONFIG_PACKAGE_luci-app-vssr_INCLUDE_Xray_plugin is not set
 CONFIG_PACKAGE_openssh-sftp-server=y
 CONFIG_PACKAGE_luci-app-alist=y
 CONFIG_PACKAGE_luci-app-openvpn-server=y
@@ -17,10 +12,6 @@ CONFIG_PACKAGE_luci-app-netspeedtest=y
 CONFIG_PACKAGE_luci-app-passwall=y
 CONFIG_PACKAGE_luci-app-passwall_INCLUDE_ChinaDNS_NG=y
 CONFIG_PACKAGE_luci-app-passwall_Iptables_Transparent_Proxy=y
-# CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_ChinaDNS_NG is not set
-# CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_ShadowsocksR_Libev_Client is not set
-# CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Shadowsocks_Simple_Obfs is not set
-# CONFIG_UnblockNeteaseMusic_Go is not set
 CONFIG_PACKAGE_luci-app-ttyd=y
 CONFIG_PACKAGE_luci-app-vlmcsd=y
 CONFIG_PACKAGE_luci-app-watchcat=y
