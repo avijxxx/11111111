@@ -91,7 +91,7 @@ jobs:
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
         cd openwrt
         if [ "$checkout" != "" ]; then
-           git checkout $checkout
+          git checkout $checkout
         fi
            
     - name: 加载已缓存的工具链
