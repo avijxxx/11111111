@@ -22,8 +22,11 @@ on:
         default: 'false'
         type: choice
         options:
-        - false
-        - true
+          - false
+          - true
+      checkout:
+        description: '回滚的commit id'     
+        required: false
 #  watch:
 #    types: started
     
@@ -33,7 +36,7 @@ on:
   
 env:
   REPO_URL: https://github.com/padavanonly/immortalwrtARM
-  REPO_BRANCH: mt7986
+  REPO_BRANCH: mt7981
   FEEDS_CONF: feeds.conf.default
   #CONFIG_FILE: .config
   CONFIG_FILE: diffconfig
@@ -43,6 +46,7 @@ env:
   UPLOAD_FIRMWARE: true
   UPLOAD_RELEASE: true
   TZ: Asia/Shanghai
+  checkout: ${{ github.event.inputs.checkout }}
 
 jobs:
   build:
@@ -85,6 +89,8 @@ jobs:
         df -hT $PWD
         git clone $REPO_URL -b $REPO_BRANCH openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
+        cd openwrt
+        git checkout $checkout
            
     - name: 加载已缓存的工具链
       uses: klever1988/cachewrtbuild@main
@@ -114,10 +120,10 @@ jobs:
     - name: 自定义diy22.sh
       run: |
         [ -e files ] && mv files openwrt/files
-        [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
+        #[ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
         chmod +x $DIY_P2_SH
         cd openwrt
-        $GITHUB_WORKSPACE/$DIY_P2_SH
+        #$GITHUB_WORKSPACE/$DIY_P2_SH
         
     - name: SSH
       uses: P3TERX/ssh2actions@v1.0.0
