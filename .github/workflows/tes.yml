@@ -139,10 +139,6 @@ jobs:
         ./scripts/diffconfig.sh > diffconfig
         curl -fsSL git.io/file-transfer | sh
         ./transfer wet -s -p 16 --no-progress diffconfig 2>&1 | tee wetransfer.log
-        echo "::warning file=wetransfer.com::$(cat wetransfer.log | grep https)"
-        echo "::set-output name=url::$(cat wetransfer.log | grep https | cut -f3 -d" ")"
-
-
 
     - name: 下载安装包
       id: package
@@ -162,10 +158,11 @@ jobs:
         cd openwrt
         echo -e "$(nproc) thread compile"
         make -j$(nproc) || make -j1 || make -j1 V=s
-        echo "::set-output name=status::success"
+        echo "{compile_status}={success}" >> $GITHUB_OUTPUT
         grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
         [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
         echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
+        
                
     - name: 查看磁盘使用情况
       if: (!cancelled())
@@ -177,7 +174,7 @@ jobs:
       
     - name: 上传bin压缩目录
       uses: actions/upload-artifact@main
-      if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
+      if: ${{env.STATE.compile_status}} == 'success' && env.UPLOAD_BIN_DIR == 'true'
       with:
         name: OpenWrt_bin${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
         path: openwrt/bin
@@ -189,11 +186,11 @@ jobs:
         cd openwrt/bin/targets/*/*
         rm -rf packages
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
-        echo "::set-output name=status::success"
+        echo "{status}={success}" >> $GITHUB_OUTPUT
 
     - name: 上传固件到github action
       uses: actions/upload-artifact@main
-      if: steps.organize.outputs.status == 'success' && !cancelled()
+      if: ${{env.STATE.compile_status}} == 'success' && !cancelled()
       with:
         name: OpenWrt_firmware${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
         path: ${{ env.FIRMWARE }}
@@ -202,18 +199,18 @@ jobs:
       id: tag
       if: env.UPLOAD_RELEASE == 'true' && !cancelled()
       run: |
-        echo "::set-output name=release_tag::$(date +"%Y.%m.%d-%H%M")"
         touch release.txt
-        echo "::set-output name=status::success"
+        echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_ENV
+        echo "{tag.status}={success}" >> $GITHUB_OUTPUT
 
     - name: 发布至release
       uses: softprops/action-gh-release@v1
-      if: steps.tag.outputs.status == 'success' && !cancelled()
+      if: ${{env.STATE.tag_status}} == 'success' && !cancelled()
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         name: 「${{env.FILE_DATE}}」-「${{env.REPO_URL}}-${{env.REPO_BRANCH}}
-        tag_name: ${{ steps.tag.outputs.release_tag }}
+        tag_name: ${{env.release_tag}}
         body_path: release.txt
         files: ${{ env.FIRMWARE }}/*
  
