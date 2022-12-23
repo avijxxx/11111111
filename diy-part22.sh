@@ -8,7 +8,7 @@ WEP3Type1=0
 WEP2Type1=0
 EOF
 
-#cat >> package/mtk/drivers/wifi-profile/files/mt7986/mt7986-ax6000.dbdc.b0.dat <<EOF
+cat >> package/mtk/drivers/wifi-profile/files/mt7986/mt7986-ax6000.dbdc.b0.dat <<EOF
 WpaMixPairCipher=
 WEP1Type1=0
 WEP4Type1=0
@@ -32,7 +32,9 @@ CONFIG_PACKAGE_luci-app-ttyd=y
 CONFIG_PACKAGE_luci-app-vlmcsd=y
 CONFIG_PACKAGE_luci-app-watchcat=y
 CONFIG_PACKAGE_luci-app-zerotier=y
-CONFIG_PACKAGE_luci-app-lucky=y
+CONFIG_PACKAGE_luci-app-ddns-go=y
+# CONFIG_PACKAGE_luci-app-lucky is not set
+
 # CONFIG_PACKAGE_luci-app-cpufreq is not set
 # CONFIG_PACKAGE_luci-app-adbyby-fix is not set
 # CONFIG_PACKAGE_luci-app-vssr_INCLUDE_ShadowsocksR_Libev_Server is not set
@@ -68,9 +70,9 @@ git clone https://github.com/sbwml/luci-app-mosdns.git package/luci-app-mosdns
 git clone https://github.com/sbwml/v2ray-geodata.git package/v2ray-geodata
 
 #增加netspeedtest测试  luci-app-lucky
-#git clone https://github.com/sirpdboy/luci-app-ddns-go.git package/ddns-go
+git clone https://github.com/sirpdboy/luci-app-ddns-go.git package/ddns-go
 git clone https://github.com/sirpdboy/netspeedtest package/netspeedtest
-git clone  https://github.com/avijxxx/luci-app-lucky package/luci-app-lucky
+#git clone  https://github.com/avijxxx/luci-app-lucky package/luci-app-lucky
 
 #增加argon
 find ./ | grep Makefile | grep argon | xargs rm -f
