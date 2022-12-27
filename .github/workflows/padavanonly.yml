@@ -10,7 +10,7 @@
 
 
 
-name: padavanonly
+name: hanwckf
 
 on:
   repository_dispatch:
@@ -22,8 +22,11 @@ on:
         default: 'false'
         type: choice
         options:
-        - false
-        - true
+          - false
+          - true
+      checkout:
+        description: '回滚的commit id'     
+        required: false
 #  watch:
 #    types: started
     
@@ -32,8 +35,8 @@ on:
     
   
 env:
-  REPO_URL: https://github.com/padavanonly/immortalwrtARM
-  REPO_BRANCH: mt7986
+  REPO_URL: https://github.com/hanwckf/immortalwrt-mt798x
+  REPO_BRANCH: openwrt-21.02
   FEEDS_CONF: feeds.conf.default
   #CONFIG_FILE: .config
   CONFIG_FILE: diffconfig
@@ -41,10 +44,9 @@ env:
   DIY_P2_SH: diy-part22.sh
   UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: true
-  UPLOAD_COWTRANSFER: false
-  UPLOAD_WETRANSFER: false
   UPLOAD_RELEASE: true
   TZ: Asia/Shanghai
+  checkout: ${{ github.event.inputs.checkout }}
 
 jobs:
   build:
@@ -52,10 +54,10 @@ jobs:
     if: github.event.repository.owner.id == github.event.sender.id
 
     steps:
-    - name: Checkout
+    - name: 检出项目分支
       uses: actions/checkout@main
       
-    - name: Check server performance
+    - name: 检查分配CPU
       run: |
         echo "警告⚠"
         echo "若分配的服务器性能不足，务必及时取消，重新运行！"
@@ -64,16 +66,13 @@ jobs:
         echo -e "-------------- ------------CPU信息------------------------------------------\n"
         echo "CPU物理数量:$(cat /proc/cpuinfo| grep "physical id"| sort| uniq| wc -l)"
         echo -e "CPU核心及版本信息：$(cat /proc/cpuinfo | grep name | cut -f2 -d: | uniq -c) \n"
-        echo "-------------------------------内存信息-------------------------------------------"
-        echo "已安装内存详细信息："
-        sudo lshw -short -C memory | grep GiB
-        echo -e "\n"
-        echo "-----------------------------硬盘信息---------------------------------------------"
-        echo -e  "硬盘数量：$(ls /dev/sd* | grep -v [1-9] | wc -l) \n"
-        echo "硬盘详情："
-        df -Th
 
-    - name: Initialization environment
+    - name: 设定时区
+      uses: zcong1993/setup-timezone@master
+      with:
+        timezone: "Asia/Shanghai"
+
+    - name: 安装编译环境
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
@@ -84,21 +83,25 @@ jobs:
         sudo mkdir -p /workdir
         sudo chown $USER:$GROUPS /workdir
 
-    - name: Clone source code
+    - name: 下载固件源码
       working-directory: /workdir
       run: |
         df -hT $PWD
         git clone $REPO_URL -b $REPO_BRANCH openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
+        cd openwrt
+        if [ "$checkout" != "" ]; then
+          git checkout $checkout
+        fi
            
-    - name: Cache
+    - name: 加载已缓存的工具链
       uses: klever1988/cachewrtbuild@main
       with:
        ccache: 'true'
        clean:  'false'  # 'false'
        prefix: ${{ github.workspace }}/openwrt
-    
-    - name: Load custom feeds
+  
+    - name: 自定义diy11.sh
       run: |
         [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
         chmod +x $DIY_P1_SH
@@ -110,45 +113,36 @@ jobs:
         fi
         $GITHUB_WORKSPACE/$DIY_P1_SH
         
-    
-    - name: Update feeds
+    - name: 下载插件
       run: cd openwrt && ./scripts/feeds update -a
 
-    - name: Install feeds
+    - name: 读取插件
       run: cd openwrt && ./scripts/feeds install -a
-      
-
-      
-
-    - name: Load custom configuration
+    
+    - name: 自定义diy22.sh
       run: |
         [ -e files ] && mv files openwrt/files
-        [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
+        #[ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
         chmod +x $DIY_P2_SH
         cd openwrt
-        $GITHUB_WORKSPACE/$DIY_P2_SH
+        #$GITHUB_WORKSPACE/$DIY_P2_SH
         
-    - name: SSH connection to Actions
+    - name: SSH
       uses: P3TERX/ssh2actions@v1.0.0
       if: (github.event.inputs.ssh == 'true' && github.event.inputs.ssh  != 'false') || contains(github.event.action, 'ssh')
       env:
         TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
 
-
-    - name: upload .config to WETRANSFER
+    - name: 再SHH运行的情况下上传diffconfig到WETRANSFER
       if: (github.event.inputs.ssh == 'true' && github.event.inputs.ssh  != 'false') || (github.event.inputs.ssh == 'true' && !cancelled())
       run: |
         cd openwrt
         ./scripts/diffconfig.sh > diffconfig
         curl -fsSL git.io/file-transfer | sh
         ./transfer wet -s -p 16 --no-progress diffconfig 2>&1 | tee wetransfer.log
-        echo "::warning file=wetransfer.com::$(cat wetransfer.log | grep https)"
-        echo "::set-output name=url::$(cat wetransfer.log | grep https | cut -f3 -d" ")"
 
-
-
-    - name: Download package
+    - name: 下载安装包
       id: package
       run: |
         [ ! -e openwrt/dl/ ] && mkdir openwrt/dl
@@ -158,101 +152,77 @@ jobs:
         make defconfig
         make download -j8
         find dl -size -1024c -exec ls -l {} \;
-        find dl -size -1024c -exec rm -f {} \;
-    
-        
+        find dl -size -1024c -exec rm -f {} \;            
 
-
-    - name: Compile the firmware
+    - name: 开始编译固件
       id: compile
       run: |
         cd openwrt
         echo -e "$(nproc) thread compile"
         make -j$(nproc) || make -j1 || make -j1 V=s
-        echo "::set-output name=status::success"
+        echo "{compile_status}={success}" >> $GITHUB_OUTPUT
         grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
         [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
         echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
         
-
-        
-
-
-    - name: Check space usage
+               
+    - name: 查看磁盘使用情况
       if: (!cancelled())
       run: df -hT
 
-    - name: Upload bin directory
+    - name: 查看目录
+      if: |
+      run: ls -al openwrt/bin/targets/*/* || true
+      
+    - name: 上传bin压缩目录
       uses: actions/upload-artifact@main
-      if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
+      if: ${{env.STATE.compile_status}} == 'success' && env.UPLOAD_BIN_DIR == 'true'
       with:
         name: OpenWrt_bin${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
         path: openwrt/bin
-   
-    
-
-    - name: Organize files
+       
+    - name: 整理编译好的固件
       id: organize
       if: env.UPLOAD_FIRMWARE == 'true' && !cancelled()
       run: |
         cd openwrt/bin/targets/*/*
         rm -rf packages
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
-        echo "::set-output name=status::success"
+        echo "{status}={success}" >> $GITHUB_OUTPUT
 
-    - name: Upload firmware directory
+    - name: 上传固件到github action
       uses: actions/upload-artifact@main
-      if: steps.organize.outputs.status == 'success' && !cancelled()
+      if: ${{env.STATE.compile_status}} == 'success' && !cancelled()
       with:
         name: OpenWrt_firmware${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
         path: ${{ env.FIRMWARE }}
 
-    - name: Upload firmware to cowtransfer
-      id: cowtransfer
-      if: steps.organize.outputs.status == 'success' && env.UPLOAD_COWTRANSFER == 'true' && !cancelled()
-      run: |
-        curl -fsSL git.io/file-transfer | sh
-        ./transfer cow --block 2621440 -s -p 64 --no-progress ${FIRMWARE} 2>&1 | tee cowtransfer.log
-        echo "::warning file=cowtransfer.com::$(cat cowtransfer.log | grep https)"
-        echo "::set-output name=url::$(cat cowtransfer.log | grep https | cut -f3 -d" ")"
-
-    - name: Upload firmware to WeTransfer
-      id: wetransfer
-      if: steps.organize.outputs.status == 'success' && env.UPLOAD_WETRANSFER == 'true' && !cancelled()
-      run: |
-        curl -fsSL git.io/file-transfer | sh
-        ./transfer wet -s -p 16 --no-progress ${FIRMWARE} 2>&1 | tee wetransfer.log
-        echo "::warning file=wetransfer.com::$(cat wetransfer.log | grep https)"
-        echo "::set-output name=url::$(cat wetransfer.log | grep https | cut -f3 -d" ")"
-
-    - name: Generate release tag
+    - name: 创建release标签
       id: tag
       if: env.UPLOAD_RELEASE == 'true' && !cancelled()
       run: |
-        echo "::set-output name=release_tag::$(date +"%Y.%m.%d-%H%M")"
         touch release.txt
-        [ $UPLOAD_COWTRANSFER = true ] && echo "🔗 [Cowtransfer](${{ steps.cowtransfer.outputs.url }})" >> release.txt
-        [ $UPLOAD_WETRANSFER = true ] && echo "🔗 [WeTransfer](${{ steps.wetransfer.outputs.url }})" >> release.txt
-        echo "::set-output name=status::success"
+        echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_ENV
+        echo "{tag.status}={success}" >> $GITHUB_OUTPUT
 
-    - name: Upload firmware to release
+    - name: 发布至release
       uses: softprops/action-gh-release@v1
-      if: steps.tag.outputs.status == 'success' && !cancelled()
+      if: ${{env.STATE.tag_status}} == 'success' && !cancelled()
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         name: 「${{env.FILE_DATE}}」-「${{env.REPO_URL}}-${{env.REPO_BRANCH}}
-        tag_name: ${{ steps.tag.outputs.release_tag }}
+        tag_name: ${{env.release_tag}}
         body_path: release.txt
         files: ${{ env.FIRMWARE }}/*
  
-    - name: Delete workflow runs
+    - name: 清理 workflow runs
       uses: GitRML/delete-workflow-runs@main
       with:
         retain_days: 1
         keep_minimum_runs: 5
 
-    - name: Remove old Releases
+    - name:  删除旧的Releases
       uses: dev-drprasad/delete-older-releases@v0.1.0
       if: env.UPLOAD_RELEASE == 'true' && !cancelled()
       with:
