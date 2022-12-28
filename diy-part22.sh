@@ -75,7 +75,7 @@ git clone https://github.com/sbwml/v2ray-geodata.git package/v2ray-geodata
 #增加netspeedtest测试  luci-app-lucky
 #git clone https://github.com/sirpdboy/luci-app-ddns-go.git package/ddns-go
 git clone https://github.com/sirpdboy/netspeedtest package/netspeedtest
-git clone https://github.com/sirpdboy/luci-app-lucky package/luci-app-lucky
+git clone https://github.com/sirpdboy/luci-app-lucky package/lucky
 
 #增加argon
 find ./ | grep Makefile | grep argon | xargs rm -f
