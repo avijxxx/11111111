@@ -17,10 +17,6 @@ WEP2Type1=0
 EOF
 
 cat >> .config <<EOF
-CONFIG_TARGET_mediatek=y
-CONFIG_TARGET_mediatek_mt7986=y
-CONFIG_TARGET_mediatek_mt7986_DEVICE_xiaomi_redmi-router-ax6000-uboot=y
-
 CONFIG_PACKAGE_openssh-sftp-server=y
 CONFIG_PACKAGE_luci-app-alist=y
 CONFIG_PACKAGE_luci-app-openvpn-server=y
