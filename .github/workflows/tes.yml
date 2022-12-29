@@ -125,7 +125,9 @@ jobs:
         #[ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
         chmod +x $DIY_P2_SH
         cd openwrt
-        $GITHUB_WORKSPACE/$DIY_P2_SH
+        #$GITHUB_WORKSPACE/$DIY_P2_SH
+        git clone https://github.com/sirpdboy/luci-app-lucky package/lucky
+        echo "CONFIG_PACKAGE_luci-app-lucky=y" >> .config
         
     - name: SSH
       uses: P3TERX/ssh2actions@v1.0.0
