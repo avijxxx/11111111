@@ -33,7 +33,7 @@ CONFIG_PACKAGE_luci-app-vlmcsd=y
 CONFIG_PACKAGE_luci-app-watchcat=y
 CONFIG_PACKAGE_luci-app-zerotier=y
 CONFIG_PACKAGE_luci-app-ddns-go=y
-CONFIG_PACKAGE_luci-app-lucky=n
+CONFIG_PACKAGE_luci-app-lucky=y
 # CONFIG_PACKAGE_luci-app-cpufreq is not set
 # CONFIG_PACKAGE_luci-app-adbyby-fix is not set
 # CONFIG_PACKAGE_luci-app-vssr_INCLUDE_ShadowsocksR_Libev_Server is not set
@@ -71,7 +71,7 @@ git clone https://github.com/sbwml/v2ray-geodata.git package/v2ray-geodata
 #增加netspeedtest测试  luci-app-lucky
 git clone https://github.com/sirpdboy/luci-app-ddns-go.git package/ddns-go
 git clone https://github.com/sirpdboy/netspeedtest package/netspeedtest
-#git clone https://github.com/sirpdboy/luci-app-lucky package/lucky
+git clone https://github.com/sirpdboy/luci-app-lucky package/lucky
 
 #增加argon
 find ./ | grep Makefile | grep argon | xargs rm -f
