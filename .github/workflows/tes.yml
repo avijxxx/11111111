@@ -174,12 +174,12 @@ jobs:
       if: |
       run: ls -al openwrt/bin/targets/*/* || true
       
-    #- name: 上传bin压缩目录
-     # uses: actions/upload-artifact@main
-      #if: ${{env.STATE.compile_status}} == 'success' && env.UPLOAD_BIN_DIR == 'true'
-      #with:
-        #name: OpenWrt_bin${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
-        #path: openwrt/bin
+    - name: 上传bin压缩目录
+      uses: actions/upload-artifact@main
+      if: ${{env.STATE.compile_status}} == 'success' && env.UPLOAD_BIN_DIR == 'true'
+      with:
+        name: OpenWrt_bin${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
+        path: openwrt/bin
        
     - name: 整理编译好的固件
       id: organize
