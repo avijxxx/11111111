@@ -77,7 +77,8 @@ index ba1cff3..644218e 100644
 -AuthMode=OPEN
 +AuthMode=WPA2PSKWPA3PSK
  AutoChannelSelect=0
- AutoChannelSkipList=52;56;60;64;
+-AutoChannelSkipList=52;56;60;64;
++AutoChannelSkipList=
  AutoProvisionEn=0
 @@ -110,7 +110,7 @@ DtimPeriod=1
  E2pAccessMode=2
