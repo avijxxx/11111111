@@ -45,16 +45,16 @@ CONFIG_PACKAGE_luci-app-lucky=y
 # CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Shadowsocks_Simple_Obfs is not set
 # CONFIG_UnblockNeteaseMusic_Go is not set
 #测试的两个
-CONFIG_PACKAGE_sing-box=y
-CONFIG_PACKAGE_luci-app-myproxy=y
-CONFIG_PACKAGE_sing-box=y
-CONFIG_PACKAGE_lua-neturl=y
+#CONFIG_PACKAGE_sing-box=y
+#CONFIG_PACKAGE_luci-app-myproxy=y
+#CONFIG_PACKAGE_sing-box=y
+#CONFIG_PACKAGE_lua-neturl=y
 EOF
 
 
 #测试
-git clone https://github.com/xwcoco/myproxy package/myproxy
-git clone https://github.com/xwcoco/sing-box package/sing-box
+#git clone https://github.com/xwcoco/myproxy package/myproxy
+#git clone https://github.com/xwcoco/sing-box package/sing-box
 
 #增加alist
 git clone https://github.com/sbwml/luci-app-alist package/alist
