@@ -49,13 +49,14 @@ CONFIG_PACKAGE_luci-app-lucky=y
 #CONFIG_PACKAGE_luci-app-myproxy=y
 #CONFIG_PACKAGE_sing-box=y
 #CONFIG_PACKAGE_lua-neturl=y
+CONFIG_PACKAGE_luci-app-homeproxy=y
 EOF
 
 
 #测试
 #git clone https://github.com/xwcoco/myproxy package/myproxy
 #git clone https://github.com/xwcoco/sing-box package/sing-box
-
+git clone https://github.com/immortalwrt/homeproxy luci-app-homeproxy
 #增加alist
 git clone https://github.com/sbwml/luci-app-alist package/alist
 rm -rf feeds/packages/lang/golang
