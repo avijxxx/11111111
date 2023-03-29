@@ -56,7 +56,7 @@ EOF
 #测试
 #git clone https://github.com/xwcoco/myproxy package/myproxy
 #git clone https://github.com/xwcoco/sing-box package/sing-box
-git clone https://github.com/immortalwrt/homeproxy luci-app-homeproxy
+git clone https://github.com/immortalwrt/homeproxy package/luci-app-homeproxy
 #增加alist
 git clone https://github.com/sbwml/luci-app-alist package/alist
 rm -rf feeds/packages/lang/golang
