@@ -107,7 +107,7 @@ jobs:
         chmod +x $DIY_P1_SH
         #cp -Rf diy/* openwrt/
         cd openwrt
-        git apply --check $GITHUB_WORKSPACE/patch.diff
+        #git apply --check $GITHUB_WORKSPACE/patch.diff
         #if [ $? -eq 0 ]; then
           #git apply $GITHUB_WORKSPACE/patch.diff
         #fi
@@ -125,7 +125,12 @@ jobs:
         #[ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
         chmod +x $DIY_P2_SH
         cd openwrt
-        $GITHUB_WORKSPACE/$DIY_P2_SH
+        #$GITHUB_WORKSPACE/$DIY_P2_SH
+        git clone https://github.com/immortalwrt/homeproxy luci-app-homeproxy
+        cat >> .config <<EOF
+        
+        CONFIG_PACKAGE_luci-app-homeproxy=y
+        EOF
         
     - name: SSH
       uses: P3TERX/ssh2actions@v1.0.0
