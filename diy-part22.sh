@@ -88,6 +88,5 @@ sed -i 's/network/services/g' package/netspeedtest/luci-app-netspeedtest/luasrc/
 sed -i 's/network/services/g' package/netspeedtest/luci-app-netspeedtest/luasrc/model/cbi/netspeedtest/*.lua
 sed -i 's/network/services/g' package/netspeedtest/luci-app-netspeedtest/luasrc/view/netspeedtest/*.htm
 
-cd openwrt
 ./scripts/feeds install -a -f -p PWpackages
 ./scripts/feeds install -a -f -p PWluci
