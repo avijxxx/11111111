@@ -32,7 +32,7 @@ CONFIG_PACKAGE_luci-app-ttyd=y
 CONFIG_PACKAGE_luci-app-vlmcsd=y
 CONFIG_PACKAGE_luci-app-watchcat=y
 CONFIG_PACKAGE_luci-app-zerotier=y
-CONFIG_PACKAGE_luci-app-ddns-go=y
+# CONFIG_PACKAGE_luci-app-ddns-go is not set
 CONFIG_PACKAGE_luci-app-lucky=y
 # CONFIG_PACKAGE_luci-app-cpufreq is not set
 # CONFIG_PACKAGE_luci-app-adbyby-fix is not set
@@ -66,16 +66,15 @@ find ./ | grep Makefile | grep v2ray-geodata | xargs rm -f
 find ./ | grep Makefile | grep mosdns | xargs rm -f
 git clone https://github.com/sbwml/luci-app-mosdns.git package/luci-app-mosdns
 git clone https://github.com/sbwml/v2ray-geodata.git package/v2ray-geodata
-#替换password
-#find ./ | grep Makefile | grep v2ray-geodata | xargs rm -f
-#find ./ | grep Makefile | grep mosdns | xargs rm -f
-#git clone https://github.com/sbwml/luci-app-mosdns.git package/luci-app-mosdns
-#git clone -b luci https://github.com/xiaorouji/openwrt-passwall.git package/luci
+
 
 #增加netspeedtest测试  luci-app-lucky
-git clone https://github.com/sirpdboy/luci-app-ddns-go.git package/ddns-go
-git clone https://github.com/sirpdboy/netspeedtest package/netspeedtest
-git clone https://github.com/sirpdboy/luci-app-lucky package/lucky
+#git clone https://github.com/sirpdboy/luci-app-ddns-go.git package/ddns-go
+#git clone https://github.com/sirpdboy/netspeedtest package/netspeedtest
+#git clone https://github.com/sirpdboy/luci-app-lucky package/lucky
+#sed -i 's/network/services/g' package/netspeedtest/luci-app-netspeedtest/luasrc/controller/*.lua
+#sed -i 's/network/services/g' package/netspeedtest/luci-app-netspeedtest/luasrc/model/cbi/netspeedtest/*.lua
+#sed -i 's/network/services/g' package/netspeedtest/luci-app-netspeedtest/luasrc/view/netspeedtest/*.htm
 
 #增加argon
 find ./ | grep Makefile | grep argon | xargs rm -f
@@ -85,12 +84,5 @@ git clone -b 18.06 https://github.com/jerrykuku/luci-theme-argon.git package/luc
 #取消bootstrap为默认主题：
 sed -i '/set luci.main.mediaurlbase=\/luci-static\/bootstrap/d' feeds/luci/themes/luci-theme-bootstrap/root/etc/uci-defaults/30_luci-theme-bootstrap
 sed -i 's/luci-theme-bootstrap/luci-theme-argon/g' ./feeds/luci/collections/luci/Makefile
-
-
-
-#移动测速到服务
-sed -i 's/network/services/g' package/netspeedtest/luci-app-netspeedtest/luasrc/controller/*.lua
-sed -i 's/network/services/g' package/netspeedtest/luci-app-netspeedtest/luasrc/model/cbi/netspeedtest/*.lua
-sed -i 's/network/services/g' package/netspeedtest/luci-app-netspeedtest/luasrc/view/netspeedtest/*.htm
 
 
