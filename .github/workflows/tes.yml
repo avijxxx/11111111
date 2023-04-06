@@ -117,8 +117,12 @@ jobs:
       run: cd openwrt && ./scripts/feeds update -a
 
     - name: 读取插件
-      run: cd openwrt && ./scripts/feeds install -a
-    
+      run: |
+           cd openwrt 
+           ./scripts/feeds install -a -f -p PWpackages
+           ./scripts/feeds install -a -f -p PWluci
+           ./scripts/feeds install -a
+           
     - name: 自定义diy22.sh
       run: |
         [ -e files ] && mv files openwrt/files
