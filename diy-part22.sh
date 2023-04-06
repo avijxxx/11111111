@@ -66,6 +66,11 @@ find ./ | grep Makefile | grep v2ray-geodata | xargs rm -f
 find ./ | grep Makefile | grep mosdns | xargs rm -f
 git clone https://github.com/sbwml/luci-app-mosdns.git package/luci-app-mosdns
 git clone https://github.com/sbwml/v2ray-geodata.git package/v2ray-geodata
+#替换password
+#find ./ | grep Makefile | grep v2ray-geodata | xargs rm -f
+#find ./ | grep Makefile | grep mosdns | xargs rm -f
+#git clone https://github.com/sbwml/luci-app-mosdns.git package/luci-app-mosdns
+#git clone -b luci https://github.com/xiaorouji/openwrt-passwall.git package/luci
 
 #增加netspeedtest测试  luci-app-lucky
 git clone https://github.com/sirpdboy/luci-app-ddns-go.git package/ddns-go
@@ -88,5 +93,4 @@ sed -i 's/network/services/g' package/netspeedtest/luci-app-netspeedtest/luasrc/
 sed -i 's/network/services/g' package/netspeedtest/luci-app-netspeedtest/luasrc/model/cbi/netspeedtest/*.lua
 sed -i 's/network/services/g' package/netspeedtest/luci-app-netspeedtest/luasrc/view/netspeedtest/*.htm
 
-./scripts/feeds install -a -f -p PWpackages
-./scripts/feeds install -a -f -p PWluci
+
