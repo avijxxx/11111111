@@ -17,7 +17,6 @@ WEP2Type1=0
 EOF
 
 cat >> .config <<EOF
-CONFIG_SDK=y
 CONFIG_PACKAGE_openssh-sftp-server=y
 CONFIG_PACKAGE_luci-app-alist=y
 CONFIG_PACKAGE_luci-app-openvpn-server=y
