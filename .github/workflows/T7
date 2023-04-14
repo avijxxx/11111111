@@ -1,0 +1,236 @@
+#
+# Copyright (c) 2019-2020 P3TERX <https://p3terx.com>
+#
+# This is free software, licensed under the MIT License.
+# See /LICENSE for more information.
+#
+# https://github.com/P3TERX/Actions-OpenWrt
+# Description: Build OpenWrt using GitHub Actions
+#
+
+
+
+name: padavanonlyT7
+
+on:
+  repository_dispatch:
+  workflow_dispatch:
+    inputs:
+      ssh:
+        description: 'SSH connection to Actions'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - false
+          - true
+      checkout:
+        description: '回滚的commit id'     
+        required: false
+#  watch:
+#    types: started
+    
+  #schedule:
+     #- cron: 00 22 * * *
+    
+  
+env:
+  REPO_URL: https://github.com/padavanonly/immortalwrtARM
+  REPO_BRANCH: mt7981
+  FEEDS_CONF: feeds.conf.default
+  #CONFIG_FILE: .config
+  CONFIG_FILE: diffconfig
+  DIY_P1_SH: diy-part11.sh
+  DIY_P2_SH: diy-part22.sh
+  UPLOAD_BIN_DIR: false
+  UPLOAD_FIRMWARE: true
+  UPLOAD_RELEASE: true
+  TZ: Asia/Shanghai
+  checkout: ${{ github.event.inputs.checkout }}
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    if: github.event.repository.owner.id == github.event.sender.id
+
+    steps:
+    - name: 检出项目分支
+      uses: actions/checkout@main
+      
+    - name: 检查分配CPU
+      run: |
+        echo "警告⚠"
+        echo "若分配的服务器性能不足，务必及时取消，重新运行！"
+        echo "已知编译成功CPU型号：8370C,8171M"
+        echo "已知性能不足CPU型号：8272CL"
+        echo -e "-------------- ------------CPU信息------------------------------------------\n"
+        echo "CPU物理数量:$(cat /proc/cpuinfo| grep "physical id"| sort| uniq| wc -l)"
+        echo -e "CPU核心及版本信息：$(cat /proc/cpuinfo | grep name | cut -f2 -d: | uniq -c) \n"
+
+    - name: 设定时区
+      uses: zcong1993/setup-timezone@master
+      with:
+        timezone: "Asia/Shanghai"
+
+    - name: 安装编译环境
+      env:
+        DEBIAN_FRONTEND: noninteractive
+      run: |
+        sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
+        sudo bash -c 'bash <(curl -s https://build-scripts.immortalwrt.eu.org/init_build_environment.sh)'
+        sudo -E apt install libfuse-dev
+        sudo timedatectl set-timezone "$TZ"
+        sudo mkdir -p /workdir
+        sudo chown $USER:$GROUPS /workdir
+
+    - name: 下载固件源码
+      working-directory: /workdir
+      run: |
+        df -hT $PWD
+        git clone $REPO_URL -b $REPO_BRANCH openwrt
+        ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
+        cd openwrt
+        if [ "$checkout" != "" ]; then
+          git checkout $checkout
+        fi
+           
+    - name: 加载已缓存的工具链
+      uses: klever1988/cachewrtbuild@main
+      with:
+       ccache: 'true'
+       clean:  'false'  # 'false'
+       prefix: ${{ github.workspace }}/openwrt
+  
+    - name: 自定义diy11.sh
+      run: |
+        [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
+        chmod +x $DIY_P1_SH
+        #cp -Rf diy/* openwrt/
+        cd openwrt
+        #git apply --check $GITHUB_WORKSPACE/patch.diff
+        #if [ $? -eq 0 ]; then
+          #git apply $GITHUB_WORKSPACE/patch.diff
+        #fi
+        $GITHUB_WORKSPACE/$DIY_P1_SH
+        
+    - name: 下载插件
+      run: cd openwrt && ./scripts/feeds update -a
+
+    - name: 读取插件
+      run: |
+           cd openwrt 
+           ./scripts/feeds install -a -f -p PWpackages
+           ./scripts/feeds install -a -f -p PWluci
+           ./scripts/feeds install -a
+           
+    - name: 自定义diy22.sh
+      run: |
+        [ -e files ] && mv files openwrt/files
+        [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
+        chmod +x $DIY_P2_SH
+        cd openwrt
+        $GITHUB_WORKSPACE/$DIY_P2_SH
+                
+    - name: SSH
+      uses: P3TERX/ssh2actions@v1.0.0
+      if: (github.event.inputs.ssh == 'true' && github.event.inputs.ssh  != 'false') || contains(github.event.action, 'ssh')
+      env:
+        TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+
+    - name: 再SHH运行的情况下上传diffconfig到WETRANSFER
+      if: (github.event.inputs.ssh == 'true' && github.event.inputs.ssh  != 'false') || (github.event.inputs.ssh == 'true' && !cancelled())
+      run: |
+        cd openwrt
+        ./scripts/diffconfig.sh > diffconfig
+        curl -fsSL git.io/file-transfer | sh
+        ./transfer wet -s -p 16 --no-progress diffconfig 2>&1 | tee wetransfer.log
+
+    - name: 下载安装包
+      id: package
+      run: |
+        [ ! -e openwrt/dl/ ] && mkdir openwrt/dl
+        [ -e dl ] && cp dl/* openwrt/dl/
+        [ -e /workdir/dl ] && cp /workdir/dl/* openwrt/dl/
+        cd openwrt
+        make defconfig
+        make download -j8
+        find dl -size -1024c -exec ls -l {} \;
+        find dl -size -1024c -exec rm -f {} \;            
+
+    - name: 开始编译固件
+      id: compile
+      run: |
+        cd openwrt
+        echo -e "$(nproc) thread compile"
+        make -j$(nproc) || make -j1 || make -j1 V=s
+        echo "{compile_status}={success}" >> $GITHUB_OUTPUT
+        grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
+        [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
+        echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
+        
+               
+    - name: 查看磁盘使用情况
+      if: (!cancelled())
+      run: df -hT
+
+    - name: 查看目录
+      if: |
+      run: ls -al openwrt/bin/targets/*/* || true
+      
+    - name: 上传bin压缩目录
+      uses: actions/upload-artifact@main
+      if: ${{env.STATE.compile_status}} == 'success' && env.UPLOAD_BIN_DIR == 'true'
+      with:
+        name: OpenWrt_bin${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
+        path: openwrt/bin
+       
+    - name: 整理编译好的固件
+      id: organize
+      if: env.UPLOAD_FIRMWARE == 'true' && !cancelled()
+      run: |
+        cd openwrt/bin/targets/*/*
+        rm -rf packages
+        echo "FIRMWARE=$PWD" >> $GITHUB_ENV
+        echo "{status}={success}" >> $GITHUB_OUTPUT
+
+    - name: 上传固件到github action
+      uses: actions/upload-artifact@main
+      if: ${{env.STATE.compile_status}} == 'success' && !cancelled()
+      with:
+        name: OpenWrt_firmware${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
+        path: ${{ env.FIRMWARE }}
+
+    - name: 创建release标签
+      id: tag
+      if: env.UPLOAD_RELEASE == 'true' && !cancelled()
+      run: |
+        touch release.txt
+        echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_ENV
+        echo "{tag.status}={success}" >> $GITHUB_OUTPUT
+
+    - name: 发布至release
+      uses: softprops/action-gh-release@v1
+      if: ${{env.STATE.tag_status}} == 'success' && !cancelled()
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        name: 「${{env.FILE_DATE}}」-「${{env.REPO_URL}}-${{env.REPO_BRANCH}}
+        tag_name: ${{env.release_tag}}
+        body_path: release.txt
+        files: ${{ env.FIRMWARE }}/*
+ 
+    - name: 清理 workflow runs
+      uses: GitRML/delete-workflow-runs@main
+      with:
+        retain_days: 1
+        keep_minimum_runs: 5
+
+    - name:  删除旧的Releases
+      uses: dev-drprasad/delete-older-releases@v0.1.0
+      if: env.UPLOAD_RELEASE == 'true' && !cancelled()
+      with:
+        keep_latest: 20
+        delete_tags: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
