@@ -67,11 +67,13 @@ find ./ | grep Makefile | grep mosdns | xargs rm -f
 git clone https://github.com/sbwml/luci-app-mosdns.git package/luci-app-mosdns
 git clone https://github.com/sbwml/v2ray-geodata.git package/v2ray-geodata
 
+#增加luci-app-lucky
+git clone https://github.com/sirpdboy/luci-app-lucky package/lucky
 
-#增加netspeedtest测试  luci-app-lucky
+#增加netspeedtest测试
 #git clone https://github.com/sirpdboy/luci-app-ddns-go.git package/ddns-go
 #git clone https://github.com/sirpdboy/netspeedtest package/netspeedtest
-#git clone https://github.com/sirpdboy/luci-app-lucky package/lucky
+
 #sed -i 's/network/services/g' package/netspeedtest/luci-app-netspeedtest/luasrc/controller/*.lua
 #sed -i 's/network/services/g' package/netspeedtest/luci-app-netspeedtest/luasrc/model/cbi/netspeedtest/*.lua
 #sed -i 's/network/services/g' package/netspeedtest/luci-app-netspeedtest/luasrc/view/netspeedtest/*.htm
