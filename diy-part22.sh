@@ -61,11 +61,13 @@ rm -rf feeds/packages/lang/golang
 svn export https://github.com/sbwml/packages_lang_golang/branches/19.x feeds/packages/lang/golang
 
 
-#增加mosdns
+#增加mosdns 4.5.3
 find ./ | grep Makefile | grep v2ray-geodata | xargs rm -f
 find ./ | grep Makefile | grep mosdns | xargs rm -f
-git clone https://github.com/sbwml/luci-app-mosdns.git package/luci-app-mosdns
+git clone -b v4 https://github.com/sbwml/luci-app-mosdns.git package/luci-app-mosdns
 git clone https://github.com/sbwml/v2ray-geodata.git package/v2ray-geodata
+
+
 
 #增加luci-app-lucky
 git clone https://github.com/sirpdboy/luci-app-lucky package/lucky
