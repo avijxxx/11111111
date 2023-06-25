@@ -68,13 +68,7 @@ git clone -b v4 https://github.com/sbwml/luci-app-mosdns.git package/luci-app-mo
 git clone https://github.com/sbwml/v2ray-geodata.git package/v2ray-geodata
    #添加easymosdns更新rule
 echo '0 1 * * * /etc/mosdns/update.easymosdns.rule.sh' > /etc/crontabs/root
-cat >> /etc/mosdns/update.easymosdns.rule.sh <<EOF
-#!/bin/bash
-# Powered by Apad.pro
-# https://apad.pro/easymosdns
-#
-mkdir -p /tmp/easymosdns && curl https://raw.githubusercontent.com/pmkol/easymosdns/rules/china_domain_list.txt > /tmp/easymosdns/china_domain_list.txt && curl https://raw.githubusercontent.com/pmkol/easymosdns/rules/gfw_domain_list.txt > /tmp/easymosdns/gfw_domain_list.txt && curl https://raw.githubusercontent.com/pmkol/easymosdns/rules/cdn_domain_list.txt > /tmp/easymosdns/cdn_domain_list.txt && curl https://raw.githubusercontent.com/pmkol/easymosdns/rules/china_ip_list.txt > /tmp/easymosdns/china_ip_list.txt && curl https://raw.githubusercontent.com/pmkol/easymosdns/rules/gfw_ip_list.txt > /tmp/easymosdns/gfw_ip_list.txt  && curl https://raw.githubusercontent.com/pmkol/easymosdns/rules/ad_domain_list.txt > /tmp/easymosdns/ad_domain_list.txt && \cp -rf /tmp/easymosdns/*.txt /etc/mosdns/rule && rm -rf /tmp/easymosdns/* && echo 'update successful'
-EOF
+
 
 #增加luci-app-lucky
 git clone https://github.com/sirpdboy/luci-app-lucky package/lucky
