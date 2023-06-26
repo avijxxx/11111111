@@ -68,6 +68,7 @@ git clone -b v4 https://github.com/sbwml/luci-app-mosdns.git package/luci-app-mo
 git clone https://github.com/sbwml/v2ray-geodata.git package/v2ray-geodata
    #添加easymosdns更新rule
 echo '0 1 * * * /etc/mosdns/update.easymosdns.rule.sh' > /etc/crontabs/root
+chmod +x files/etc/mosdns/update.easymosdns.rule.sh
 
 
 #增加luci-app-lucky
