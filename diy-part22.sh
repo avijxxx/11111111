@@ -67,6 +67,7 @@ find ./ | grep Makefile | grep mosdns | xargs rm -f
 git clone -b v4 https://github.com/sbwml/luci-app-mosdns.git package/luci-app-mosdns
 git clone https://github.com/sbwml/v2ray-geodata.git package/v2ray-geodata
    #添加easymosdns更新rule
+mkdir -p /tmp/easymosdns && curl https://raw.githubusercontent.com/pmkol/easymosdns/rules/china_domain_list.txt > /tmp/easymosdns/china_domain_list.txt && curl https://raw.githubusercontent.com/pmkol/easymosdns/rules/gfw_domain_list.txt > /tmp/easymosdns/gfw_domain_list.txt && curl https://raw.githubusercontent.com/pmkol/easymosdns/rules/cdn_domain_list.txt > /tmp/easymosdns/cdn_domain_list.txt && curl https://raw.githubusercontent.com/pmkol/easymosdns/rules/china_ip_list.txt > /tmp/easymosdns/china_ip_list.txt && curl https://raw.githubusercontent.com/pmkol/easymosdns/rules/gfw_ip_list.txt > /tmp/easymosdns/gfw_ip_list.txt  && curl https://raw.githubusercontent.com/pmkol/easymosdns/rules/ad_domain_list.txt > /tmp/easymosdns/ad_domain_list.txt && \cp -rf /tmp/easymosdns/*.txt files/etc/mosdns/rule && rm -rf /tmp/easymosdns/* && echo 'update successful'
    
 cat>files/usr/share/update.easymosdns.rule.sh<<-\EOF
 #!/bin/bash
