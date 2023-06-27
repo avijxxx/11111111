@@ -71,6 +71,7 @@ mkdir -p files/usr/share
 mkdir -p files/etc/mosdns/rule
 mkdir -p files/etc/crontabs
 touch files/usr/share/update.easymosdns.rule.sh
+touch files/etc/mosdns/config_custom.yaml
 touch files/etc/crontabs/root
 mkdir -p /tmp/easymosdns && curl https://raw.githubusercontent.com/pmkol/easymosdns/rules/china_domain_list.txt > /tmp/easymosdns/china_domain_list.txt && curl https://raw.githubusercontent.com/pmkol/easymosdns/rules/gfw_domain_list.txt > /tmp/easymosdns/gfw_domain_list.txt && curl https://raw.githubusercontent.com/pmkol/easymosdns/rules/cdn_domain_list.txt > /tmp/easymosdns/cdn_domain_list.txt && curl https://raw.githubusercontent.com/pmkol/easymosdns/rules/china_ip_list.txt > /tmp/easymosdns/china_ip_list.txt && curl https://raw.githubusercontent.com/pmkol/easymosdns/rules/gfw_ip_list.txt > /tmp/easymosdns/gfw_ip_list.txt  && curl https://raw.githubusercontent.com/pmkol/easymosdns/rules/ad_domain_list.txt > /tmp/easymosdns/ad_domain_list.txt && \cp -rf /tmp/easymosdns/*.txt files/etc/mosdns/rule && rm -rf /tmp/easymosdns/* && echo 'update successful'
 echo '0 1 * * * chmod +x usr/share/update.easymosdns.rule.sh && usr/share/update.easymosdns.rule.sh' > files/etc/crontabs/root
@@ -83,7 +84,121 @@ cat>files/usr/share/update.easymosdns.rule.sh<<-\EOF
 mkdir -p /tmp/easymosdns && curl https://raw.githubusercontent.com/pmkol/easymosdns/rules/china_domain_list.txt > /tmp/easymosdns/china_domain_list.txt && curl https://raw.githubusercontent.com/pmkol/easymosdns/rules/gfw_domain_list.txt > /tmp/easymosdns/gfw_domain_list.txt && curl https://raw.githubusercontent.com/pmkol/easymosdns/rules/cdn_domain_list.txt > /tmp/easymosdns/cdn_domain_list.txt && curl https://raw.githubusercontent.com/pmkol/easymosdns/rules/china_ip_list.txt > /tmp/easymosdns/china_ip_list.txt && curl https://raw.githubusercontent.com/pmkol/easymosdns/rules/gfw_ip_list.txt > /tmp/easymosdns/gfw_ip_list.txt  && curl https://raw.githubusercontent.com/pmkol/easymosdns/rules/ad_domain_list.txt > /tmp/easymosdns/ad_domain_list.txt && \cp -rf /tmp/easymosdns/*.txt /etc/mosdns/rule && rm -rf /tmp/easymosdns/* && echo 'update successful'
 EOF
 
-
+cat>files/etc/mosdns/config_custom.yaml<<-\EOF
+# EasyMosdns Client v3.0
+log:
+    file: "/tmp/mosdns.log"
+    level: info
+data_providers:
+  - tag: chinalist
+    file: /etc/mosdns/rule/china_domain_list.txt
+    auto_reload: true
+  - tag: cdncn
+    file: /etc/mosdns/rule/cdn_domain_list.txt
+    auto_reload: true
+plugins:
+  # 乐观缓存的插件
+  - tag: cache
+    type: cache
+    args:
+      size: 5000
+      compress_resp: true
+      lazy_cache_ttl: 86400
+      cache_everything: true
+      lazy_cache_reply_ttl: 3
+  # IP反查缓存的插件
+  - tag: reverse_lookup
+    type: reverse_lookup
+    args:
+      size: 1000
+      ttl: 3600
+      handle_ptr: true
+  # 调整TTL的插件
+  - tag: ttl_long
+    type: ttl
+    args:
+      minimal_ttl: 600
+      maximum_ttl: 86400
+  # 转发AliDNS的插件
+  - tag: forward_alidns
+    type: fast_forward
+    args:
+      upstream:
+        - addr: "223.5.5.5"
+  # 转发DNSPod的插件
+  - tag: forward_dnspod
+    type: fast_forward
+    args:
+      upstream:
+        - addr: "tls://1.12.12.12:853"
+          enable_pipeline: true
+  # 转发远程服务器的插件
+  - tag: forward_remote
+    type: fast_forward
+    args:
+      upstream:
+        - addr: "tls://8.8.4.4:853"
+          enable_pipeline: true
+  # 转发分流服务器的插件
+  - tag: forward_apad_pro
+    type: fast_forward
+    args:
+      upstream:
+        - addr: "https://doh.apad.pro/dns-query"
+          bootstrap: "119.29.29.29"
+          enable_http3: false
+  # 匹配本地域名的插件
+  - tag: query_is_local_domain
+    type: query_matcher
+    args:
+      domain:
+        - "provider:chinalist"
+  # 匹配CDN域名的插件
+  - tag: query_is_cdn_cn_domain
+    type: query_matcher
+    args:
+      domain:
+        - "provider:cdncn"
+  # 主要的运行逻辑插件
+  - tag: main_sequence
+    type: sequence
+    args:
+      exec:
+        # 缓存
+        - reverse_lookup
+        - cache
+        # 本地域名与CDN域名处理
+        - if: "(query_is_local_domain) || (query_is_cdn_cn_domain)"
+          exec:
+            - primary:
+                # 优先用AliDNS解析
+                - forward_alidns
+              secondary:
+                # 超时用DNSPod解析
+                - forward_dnspod
+              fast_fallback: 50
+              always_standby: true
+            - _return
+        # 剩下的域名处理
+        - primary:
+            # 优先用分流服务器解析
+            - forward_apad_pro
+          secondary:
+            # 超时用远程服务器解析
+            - forward_remote
+          fast_fallback: 500
+          always_standby: false
+        - ttl_long
+servers:
+  - exec: main_sequence
+    timeout: 5
+    # 监听地址配置
+    listeners:
+      - protocol: udp
+        addr: "0.0.0.0:5335"
+      - protocol: tcp
+        addr: "0.0.0.0:5335"
+EOF
 
 #增加luci-app-lucky
 git clone https://github.com/sirpdboy/luci-app-lucky package/lucky
