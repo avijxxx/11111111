@@ -67,21 +67,20 @@ find ./ | grep Makefile | grep mosdns | xargs rm -f
 git clone -b v4 https://github.com/sbwml/luci-app-mosdns.git package/luci-app-mosdns
 git clone https://github.com/sbwml/v2ray-geodata.git package/v2ray-geodata
    #添加easymosdns更新rule
-mkdir -p files/usr/share
 mkdir -p files/etc/mosdns/rule
 mkdir -p files/etc/crontabs
-touch files/usr/share/update.easymosdns.rule.sh
+touch files/etc/mosdns/update.easymosdns.rule.sh
 touch files/etc/mosdns/config_custom.yaml
 touch files/etc/crontabs/root
-mkdir -p /tmp/easymosdns && curl https://raw.githubusercontent.com/pmkol/easymosdns/rules/china_domain_list.txt > /tmp/easymosdns/china_domain_list.txt && curl https://raw.githubusercontent.com/pmkol/easymosdns/rules/gfw_domain_list.txt > /tmp/easymosdns/gfw_domain_list.txt && curl https://raw.githubusercontent.com/pmkol/easymosdns/rules/cdn_domain_list.txt > /tmp/easymosdns/cdn_domain_list.txt && curl https://raw.githubusercontent.com/pmkol/easymosdns/rules/china_ip_list.txt > /tmp/easymosdns/china_ip_list.txt && curl https://raw.githubusercontent.com/pmkol/easymosdns/rules/gfw_ip_list.txt > /tmp/easymosdns/gfw_ip_list.txt  && curl https://raw.githubusercontent.com/pmkol/easymosdns/rules/ad_domain_list.txt > /tmp/easymosdns/ad_domain_list.txt && \cp -rf /tmp/easymosdns/*.txt files/etc/mosdns/rule && rm -rf /tmp/easymosdns/* && echo 'update successful'
-echo '0 1 * * * chmod +x usr/share/update.easymosdns.rule.sh && usr/share/update.easymosdns.rule.sh' > files/etc/crontabs/root
+mkdir -p /tmp/easymosdns && curl https://raw.githubusercontent.com/pmkol/easymosdns/rules/china_domain_list.txt > /tmp/easymosdns/china_domain_list.txt && curl https://raw.githubusercontent.com/pmkol/easymosdns/rules/cdn_domain_list.txt > /tmp/easymosdns/cdn_domain_list.txt &&  \cp -rf /tmp/easymosdns/*.txt files/etc/mosdns/rule && rm -rf /tmp/easymosdns/* && echo 'update successful'
+echo '0 1 * * * chmod +x etc/mosdns/update.easymosdns.rule.sh && etc/mosdns/update.easymosdns.rule.sh' > files/etc/crontabs/root
 
-cat>files/usr/share/update.easymosdns.rule.sh<<-\EOF
+cat>files/etc/mosdns/update.easymosdns.rule.sh<<-\EOF
 #!/bin/bash
 # Powered by Apad.pro
 # https://apad.pro/easymosdns
 #
-mkdir -p /tmp/easymosdns && curl https://raw.githubusercontent.com/pmkol/easymosdns/rules/china_domain_list.txt > /tmp/easymosdns/china_domain_list.txt && curl https://raw.githubusercontent.com/pmkol/easymosdns/rules/gfw_domain_list.txt > /tmp/easymosdns/gfw_domain_list.txt && curl https://raw.githubusercontent.com/pmkol/easymosdns/rules/cdn_domain_list.txt > /tmp/easymosdns/cdn_domain_list.txt && curl https://raw.githubusercontent.com/pmkol/easymosdns/rules/china_ip_list.txt > /tmp/easymosdns/china_ip_list.txt && curl https://raw.githubusercontent.com/pmkol/easymosdns/rules/gfw_ip_list.txt > /tmp/easymosdns/gfw_ip_list.txt  && curl https://raw.githubusercontent.com/pmkol/easymosdns/rules/ad_domain_list.txt > /tmp/easymosdns/ad_domain_list.txt && \cp -rf /tmp/easymosdns/*.txt /etc/mosdns/rule && rm -rf /tmp/easymosdns/* && echo 'update successful'
+mkdir -p /tmp/easymosdns && curl https://raw.githubusercontent.com/pmkol/easymosdns/rules/china_domain_list.txt > /tmp/easymosdns/china_domain_list.txt && curl https://raw.githubusercontent.com/pmkol/easymosdns/rules/cdn_domain_list.txt > /tmp/easymosdns/cdn_domain_list.txt &&  \cp -rf /tmp/easymosdns/*.txt etc/mosdns/rule && rm -rf /tmp/easymosdns/* && echo 'update successful'
 EOF
 
 cat>files/etc/mosdns/config_custom.yaml<<-\EOF
