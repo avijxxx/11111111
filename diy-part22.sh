@@ -1,21 +1,5 @@
 sed -i 's/192.168.6.1/192.168.10.12/g' package/base-files/files/bin/config_generate
 
-cat >> package/mtk/drivers/wifi-profile/files/mt7986/mt7986-ax6000.dbdc.b1.dat <<EOF
-WpaMixPairCipher=
-WEP1Type1=0
-WEP4Type1=0
-WEP3Type1=0
-WEP2Type1=0
-EOF
-
-cat >> package/mtk/drivers/wifi-profile/files/mt7986/mt7986-ax6000.dbdc.b0.dat <<EOF
-WpaMixPairCipher=
-WEP1Type1=0
-WEP4Type1=0
-WEP3Type1=0
-WEP2Type1=0
-EOF
-
 cat >> .config <<EOF
 CONFIG_PACKAGE_openssh-sftp-server=y
 CONFIG_PACKAGE_luci-app-alist=y
@@ -44,17 +28,9 @@ CONFIG_PACKAGE_luci-app-lucky=y
 # CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_ShadowsocksR_Libev_Client is not set
 # CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Shadowsocks_Simple_Obfs is not set
 # CONFIG_UnblockNeteaseMusic_Go is not set
-#测试的两个
-#CONFIG_PACKAGE_sing-box=y
-#CONFIG_PACKAGE_luci-app-myproxy=y
-#CONFIG_PACKAGE_sing-box=y
-#CONFIG_PACKAGE_lua-neturl=y
 EOF
 
 
-#测试
-#git clone https://github.com/xwcoco/myproxy package/myproxy
-#git clone https://github.com/xwcoco/sing-box package/sing-box
 #增加alist
 git clone https://github.com/sbwml/luci-app-alist package/alist
 rm -rf feeds/packages/lang/golang
