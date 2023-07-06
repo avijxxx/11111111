@@ -35,9 +35,9 @@ EOF
 svn checkout https://github.com/syb999/openwrt-19.07.1/trunk/package/network/services/msd_lite package/msd_lite
 
 #增加alist
-git clone https://github.com/sbwml/luci-app-alist package/alist
-rm -rf feeds/packages/lang/golang
-svn export https://github.com/sbwml/packages_lang_golang/branches/19.x feeds/packages/lang/golang
+#git clone https://github.com/sbwml/luci-app-alist package/alist
+#rm -rf feeds/packages/lang/golang
+#svn export https://github.com/sbwml/packages_lang_golang/branches/19.x feeds/packages/lang/golang
 
 
 #增加mosdns 4.5.3
