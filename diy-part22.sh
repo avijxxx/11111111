@@ -32,8 +32,7 @@ CONFIG_PACKAGE_luci-app-msd_lite=y
 EOF
 
 
-git clone https://github.com/syb999/openwrt-19.07.1/trunk/package/network/services/msd_lite package/network/services
-/msd_lite
+git clone https://github.com/syb999/openwrt-19.07.1/trunk/package/network/services/msd_lite package/luci-app-msd_lite
 
 #增加alist
 git clone https://github.com/sbwml/luci-app-alist package/alist
