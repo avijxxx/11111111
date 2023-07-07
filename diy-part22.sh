@@ -32,12 +32,13 @@ CONFIG_PACKAGE_luci-app-msd_lite=y
 EOF
 
 
-svn checkout https://github.com/syb999/openwrt-19.07.1/trunk/package/network/services/msd_lite package/msd_lite
-
+#svn checkout https://github.com/syb999/openwrt-19.07.1/trunk/package/network/services/msd_lite package/msd_lite
+svn checkout https://github.com/xiangfeidexiaohuo/openwrt-packages/trunk/luci-app-msd_lite package/luci-app-msd_lite
+git clone https://github.com/ximiTech/msd_lite package/msd_lite
 #增加alist
-#git clone https://github.com/sbwml/luci-app-alist package/alist
-#rm -rf feeds/packages/lang/golang
-#svn export https://github.com/sbwml/packages_lang_golang/branches/19.x feeds/packages/lang/golang
+git clone https://github.com/sbwml/luci-app-alist package/alist
+rm -rf feeds/packages/lang/golang
+git clone https://github.com/sbwml/packages_lang_golang -b 20.x feeds/packages/lang/golang
 
 
 #增加mosdns 4.5.3
