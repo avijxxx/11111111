@@ -89,6 +89,18 @@ plugins:
       size: 1000
       ttl: 3600
       handle_ptr: true
+
+
+
+  # 匹配BPCDN域名的插件
+  - tag: bpcdn
+    type: query_matcher
+    args:
+      domain:
+        - "domain:szbdyd.com"
+        - "full:mcdn.bilivideo.cn"
+        - "regexp:.+pcdn.+.biliapi.net$"
+
   # 调整TTL的插件
   - tag: ttl_long
     type: ttl
@@ -143,6 +155,11 @@ plugins:
         # 缓存
         - reverse_lookup
         - cache
+        # B站PCDN
+        - if: bpcdn
+          exec:
+          - _new_nxdomain_response
+          - _return
         # 本地域名与CDN域名处理
         - if: "(query_is_local_domain) || (query_is_cdn_cn_domain)"
           exec:
