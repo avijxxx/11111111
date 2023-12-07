@@ -89,8 +89,13 @@ plugins:
       size: 1000
       ttl: 3600
       handle_ptr: true
-
-
+  # 匹配emby域名的插件
+  - tag: emby
+    type: query_matcher
+    args:
+      domain:
+        - "domain:odysseyplus.site"
+        - "full:cf.odysseyplus.site"
 
   # 匹配BPCDN域名的插件
   - tag: bpcdn
@@ -160,6 +165,13 @@ plugins:
           exec:
           - _new_nxdomain_response
           - _return
+
+        # emby
+        - if: emby
+          exec:
+          - forward_remote
+          - _return
+
         # 本地域名与CDN域名处理
         - if: "(query_is_local_domain) || (query_is_cdn_cn_domain)"
           exec:
