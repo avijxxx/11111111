@@ -30,7 +30,7 @@ CONFIG_PACKAGE_luci-app-lucky=y
 # CONFIG_UnblockNeteaseMusic_Go is not set
 EOF
 
-
+git clone https://github.com/douglarek/luci-app-homeproxy package/luci-app-homeproxy
 
 #增加alist
 git clone https://github.com/sbwml/luci-app-alist package/alist
