@@ -30,12 +30,12 @@ CONFIG_PACKAGE_luci-app-lucky=y
 # CONFIG_UnblockNeteaseMusic_Go is not set
 EOF
 
-git clone https://github.com/douglarek/luci-app-homeproxy package/luci-app-homeproxy
+
 
 #增加alist
-git clone https://github.com/sbwml/luci-app-alist package/alist
-rm -rf feeds/packages/lang/golang
-git clone https://github.com/sbwml/packages_lang_golang -b 20.x feeds/packages/lang/golang
+#git clone https://github.com/sbwml/luci-app-alist package/alist
+#rm -rf feeds/packages/lang/golang
+#git clone https://github.com/sbwml/packages_lang_golang -b 20.x feeds/packages/lang/golang
 
 
 #增加mosdns 4.5.3
