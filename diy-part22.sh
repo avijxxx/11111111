@@ -38,7 +38,10 @@ CONFIG_PACKAGE_luci-app-lucky=y
 # CONFIG_UnblockNeteaseMusic_Go is not set
 EOF
 
-
+#Pass Wall
+git clone --depth=1 --single-branch https://github.com/xiaorouji/openwrt-passwall.git
+#git clone --depth=1 --single-branch https://github.com/xiaorouji/openwrt-passwall2.git
+git clone --depth=1 --single-branch https://github.com/xiaorouji/openwrt-passwall-packages.git
 
 #增加alist
 #git clone https://github.com/sbwml/luci-app-alist package/alist
